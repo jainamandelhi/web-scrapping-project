@@ -1,4 +1,4 @@
-import requests
+"""import requests
 import json
 from bs4 import BeautifulSoup as bs
 
@@ -63,3 +63,4 @@ for doc in pastEventsCollection.find():
 
 print(listAns)
 
+"""
