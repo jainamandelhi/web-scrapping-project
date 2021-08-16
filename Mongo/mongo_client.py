@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import document_scrap as ds
+from Service import document_scrap as ds
 
 client = MongoClient()
 
