@@ -1,66 +1,19 @@
-"""import requests
-import json
-from bs4 import BeautifulSoup as bs
+from fastapi import FastAPI
+from Mongo import mongo_client
+from Constant import constants
+from Models import EventCompleteInfo
 
-r = requests.get("https://investor.weyerhaeuser.com/events-and-presentations")
-soup = bs(r.content)
-
-pastEvents = soup.select("div.wd_event")
-
-eventsLink = []
-for p in pastEvents:
-    eventsLink.append(p.find("a")["href"])
-
-pastEventsInfo = []  # title, date, [{"pdfTitle": "pdfLink"}]
+app = FastAPI()
 
 
-class PastEventInfo:
-    def __init__(self, title, date, pdfInfo):
-        self.title = title
-        self.date = date
-        self.pdfInfo = pdfInfo
+@app.get("/events/{event_id}")
+def get_event_info(event_id):
+    events_list = mongo_client.get_past_event_info(constants.events_db[event_id], constants.events_link[event_id])
+    ans = []
+    for item in events_list:
+        event = EventCompleteInfo.EventCompleteInfo(item["event_title"], item["event_date"], item["pdf_title"],
+                                                    item["pdf_link"])
+        ans.append(event)
+    return ans
 
 
-class PdfInfo:
-    def __init__(self, title, href):
-        self.title = title
-        self.href = href
-
-
-for link in eventsLink:
-    address = requests.get(link)
-    soupAddress = bs(address.content)
-    title = soupAddress.find("div", attrs={"class": "wd_title wd_event_title detail_header"}).get_text()
-    date = soupAddress.find("div", attrs={"class": "item_date wd_event_sidebar_item wd_event_date"}).get_text()
-    pdfInfoList = []
-    pdfs = soupAddress.select("div.wd_event_info a")
-    for pdf in pdfs:
-        pdfTitle = pdf.get_text()
-        href = pdf["href"]
-        pdfList = {pdfTitle: href}
-        pdfInfoList.append(pdfList)
-    pastEventInfo = {"title": title, "date": date, "links": pdfInfoList}
-    pastEventsInfo.append(pastEventInfo)
-
-#print(pastEventsInfo)
-
-import pymongo
-from pymongo import MongoClient
-client = MongoClient()
-print(client)
-
-db = client.scrapping
-
-pastEventsCollection = db.pastEventsCollection
-print(pastEventsCollection)
-result = pastEventsCollection.insert_many(pastEventsInfo)
-
-import pprint
-
-listAns = []
-for doc in pastEventsCollection.find():
-    listAns.append(doc)
-
-print(listAns)
-
-"""
