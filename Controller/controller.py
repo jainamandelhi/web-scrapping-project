@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from Mongo import mongo_client
 from Constant import constants
-from Model import EventCompleteInfo
+from Models import EventCompleteInfo
 
 app = FastAPI()
 

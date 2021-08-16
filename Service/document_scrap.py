@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup as bs
 
-from Model import PDFInfo
+from Models import PDFInfo
 
 
 def find_events_link(past_events):
